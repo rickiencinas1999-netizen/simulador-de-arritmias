@@ -21,6 +21,7 @@
     ['tad', 'PAD mmHg', 10, 160],
     ['fr', 'FR rpm', 0, 60],
     ['etco2', 'EtCO₂ mmHg', 0, 99],
+    ['temp', 'Temp °C', 30, 43, 0.1],
   ];
 
   // Estado aplicado actualmente al monitor.
@@ -49,12 +50,14 @@
   function camposSignos(cont, ritmo, signos, alCambiar) {
     cont.innerHTML = '';
     const inputs = {};
-    for (const [clave, etq, min, max] of CAMPOS_SIGNOS) {
+    for (const [clave, etq, min, max, paso = 1] of CAMPOS_SIGNOS) {
       const lab = document.createElement('label');
       const inp = document.createElement('input');
       inp.type = 'number';
       inp.min = min;
       inp.max = max;
+      inp.step = paso;
+      inp.inputMode = paso < 1 ? 'decimal' : 'numeric';
       const sinPulso = !ritmo.pulso && ['spo2', 'tas', 'tad'].includes(clave);
       inp.disabled = sinPulso;
       inp.placeholder = sinPulso ? 'sin pulso' : '';
@@ -66,10 +69,12 @@
     }
     return () => {
       const s = {};
-      for (const [clave, , min, max] of CAMPOS_SIGNOS) {
+      for (const [clave, , min, max, paso = 1] of CAMPOS_SIGNOS) {
         const i = inputs[clave];
         if (i.disabled || i.value === '') { s[clave] = i.disabled ? null : ritmo.signos[clave]; continue; }
-        s[clave] = Math.min(max, Math.max(min, Math.round(Number(i.value))));
+        const v = Math.min(max, Math.max(min, Number(i.value.replace(',', '.'))));
+        s[clave] = paso < 1 ? Math.round(v * 10) / 10 : Math.round(v);
+        if (String(s[clave]) !== i.value) i.value = s[clave];
       }
       return s;
     };
@@ -99,8 +104,36 @@
     const valor = sinFc ? r.fc ?? '' : fc ?? r.fc;
     rngFc.value = numFc.value = valor;
     $('notaFc').textContent = r.fija ? '(fija por la conducción)' : r.fc == null ? '(no aplica)' : r.notaFc ? `(${r.notaFc})` : `(${r.rango[0]}–${r.rango[1]})`;
-    leerSignos = camposSignos($('signosRitmo'), r, signos ?? r.signos);
+    leerSignos = camposSignos($('signosRitmo'), r, signos ?? r.signos, cambioEnVivo);
     mostrarFicha(r);
+    actualizarNotaSignos();
+  }
+
+  // Si el ritmo del formulario es el que está en el monitor, FC y signos se aplican al instante.
+  const enMonitor = () => selRitmo.value === actual.ritmo;
+
+  function actualizarNotaSignos() {
+    const n = $('notaSignos');
+    n.textContent = enMonitor() ? '● Los cambios se aplican al instante' : 'Se aplicarán al pulsar «Aplicar ahora»';
+    n.className = enMonitor() ? 'en-vivo' : '';
+  }
+
+  function cambioEnVivo() {
+    if (!enMonitor()) return;
+    actual.signos = leerSignos();
+    motor.actualizarSignos(actual.signos);
+    monitor.actualizarNumeros(true);
+    difundir();
+  }
+
+  function fcEnVivo() {
+    if (!enMonitor()) return;
+    const e = leerFormulario();
+    if (e.fc == null || e.fc === actual.fc) return;
+    rngFc.value = numFc.value = e.fc;
+    actual.fc = e.fc;
+    motor.ponerRitmo(porId(actual.ritmo), actual.fc, actual.signos);
+    difundir();
   }
 
   function mostrarFicha(r) {
@@ -126,8 +159,9 @@
 
   selRitmo.addEventListener('change', () => mostrarFormulario(selRitmo.value));
   rngFc.addEventListener('input', () => { numFc.value = rngFc.value; });
-  numFc.addEventListener('change', () => { rngFc.value = numFc.value; });
-  $('btnAplicar').addEventListener('click', () => aplicar(leerFormulario()));
+  rngFc.addEventListener('change', fcEnVivo);
+  numFc.addEventListener('change', () => { rngFc.value = numFc.value; fcEnVivo(); });
+  $('btnAplicar').addEventListener('click', () => { aplicar(leerFormulario()); actualizarNotaSignos(); });
   $('btnAgregar').addEventListener('click', () => {
     const e = leerFormulario();
     rep.pasos.push(crearPaso(e.ritmo, e.fc, 30, e.signos));

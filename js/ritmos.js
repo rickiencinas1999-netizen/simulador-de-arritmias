@@ -111,7 +111,7 @@
 
   // ---------- Signos vitales por defecto ----------
 
-  const sv = (spo2, tas, tad, fr, etco2) => ({ spo2, tas, tad, fr, etco2 });
+  const sv = (spo2, tas, tad, fr, etco2, temp = 36.8) => ({ spo2, tas, tad, fr, etco2, temp });
   const SIN_PULSO = sv(null, null, null, 10, 15);
 
   // ---------- Catálogo ----------

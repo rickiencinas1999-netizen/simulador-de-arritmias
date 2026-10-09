@@ -56,6 +56,7 @@
             <div class="num-cab"><span>PANI</span><span>mmHg</span></div>
             <div class="valor mediano" data-v="pa">--/--</div>
             <div class="unid" data-v="pam"></div>
+            <div class="temp">Temp <b data-v="temp">--</b> °C</div>
           </div>
           <div class="num co2">
             <div class="num-cab"><span>EtCO₂</span><span>FR <b data-v="fr">--</b></span></div>
@@ -81,10 +82,13 @@
             <input type="number" id="numFc" inputmode="numeric">
           </div>
         </div>
-        <details class="signos">
-          <summary>Signos vitales</summary>
+        <div class="signos">
+          <div class="signos-cab">
+            <span>Signos vitales</span>
+            <small id="notaSignos"></small>
+          </div>
           <div class="rejilla-signos" id="signosRitmo"></div>
-        </details>
+        </div>
         <div class="botones">
           <button id="btnAplicar" class="primario" type="button">▶ Aplicar ahora</button>
           <button id="btnAgregar" type="button">＋ Añadir al escenario</button>
