@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Simulador de Arritmias</title>
+  <meta name="description" content="Simulador de monitor y arritmias cardiacas.">
+  <meta name="theme-color" content="#0d1117">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="Arritmias">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="iconos/icono-192.png" type="image/png">
+  <link rel="apple-touch-icon" href="iconos/icono-180.png">
+  <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+  <header class="cabecera">
+    <div class="titulo">
+      <h1>Simulador de Arritmias</h1>
+    </div>
+    <div class="acciones-cab">
+      <button id="btnSonido" type="button" title="Activar o desactivar el sonido (S)">🔇 Sonido apagado</button>
+      <button id="btnVentana" type="button" title="Abre solo el monitor en otra ventana para proyectarlo">🖥 Monitor en otra ventana</button>
+      <button id="btnCompleta" type="button" title="Monitor a pantalla completa (F)">⛶ Pantalla completa</button>
+    </div>
+  </header>
+
+  <main class="app">
+    <section class="monitor" id="monitor" aria-label="Monitor de signos vitales">
+      <div class="barra-sup">
+        <span class="paciente">Paciente simulado · Adulto</span>
+        <span class="nombre-ritmo" data-v="nombre"></span>
+        <span class="alarma" data-v="alarma"></span>
+        <span class="estado" data-v="estado"></span>
+        <span class="reloj" data-v="reloj"></span>
+      </div>
+      <div class="pantalla">
+        <div class="trazos">
+          <div class="fila-trazo ecg"><span class="etq">II</span><span class="etq etq-der" id="etqGanancia">x1 · 25 mm/s</span><div class="trazo" data-trazo="ecg"></div></div>
+          <div class="fila-trazo pleth"><span class="etq">Pleth</span><div class="trazo" data-trazo="pleth"></div></div>
+          <div class="fila-trazo co2"><span class="etq">CO₂</span><div class="trazo" data-trazo="co2"></div></div>
+        </div>
+        <div class="numeros">
+          <div class="num ecg">
+            <div class="num-cab"><span>FC</span><span class="corazon" data-v="corazon">♥</span></div>
+            <div class="valor grande" data-v="fc">--</div>
+            <div class="unid">lpm</div>
+          </div>
+          <div class="num pleth">
+            <div class="num-cab"><span>SpO₂</span><span>%</span></div>
+            <div class="valor" data-v="spo2">--</div>
+          </div>
+          <div class="num pa">
+            <div class="num-cab"><span>PANI</span><span>mmHg</span></div>
+            <div class="valor mediano" data-v="pa">--/--</div>
+            <div class="unid" data-v="pam"></div>
+          </div>
+          <div class="num co2">
+            <div class="num-cab"><span>EtCO₂</span><span>FR <b data-v="fr">--</b></span></div>
+            <div class="valor" data-v="etco2">--</div>
+            <div class="unid">mmHg</div>
+          </div>
+        </div>
+      </div>
+      <button class="btn-sonido-flotante" id="btnSonidoMonitor" type="button">🔇 Toca para activar el sonido</button>
+    </section>
+
+    <aside class="panel" aria-label="Controles del instructor">
+      <section class="tarjeta">
+        <h2>Ritmo</h2>
+        <label class="campo">
+          <span>Arritmia</span>
+          <select id="selRitmo"></select>
+        </label>
+        <div class="campo campo-fc">
+          <label for="numFc">FC <small id="notaFc"></small></label>
+          <div class="fila-fc">
+            <input type="range" id="rngFc" aria-label="Frecuencia cardiaca">
+            <input type="number" id="numFc" inputmode="numeric">
+          </div>
+        </div>
+        <details class="signos">
+          <summary>Signos vitales</summary>
+          <div class="rejilla-signos" id="signosRitmo"></div>
+        </details>
+        <div class="botones">
+          <button id="btnAplicar" class="primario" type="button">▶ Aplicar ahora</button>
+          <button id="btnAgregar" type="button">＋ Añadir al escenario</button>
+        </div>
+        <div class="ficha" id="fichaRitmo"></div>
+      </section>
+
+      <section class="tarjeta">
+        <h2>Intervenciones y pantalla</h2>
+        <div class="botones">
+          <button id="btnRcp" type="button" aria-pressed="false" title="Artefacto de compresiones torácicas (C)">🫀 RCP</button>
+          <button id="btnDescarga" type="button" class="peligro" title="Muestra el artefacto de una descarga (D)">⚡ Descarga</button>
+          <button id="btnCongelar" type="button" aria-pressed="false" title="Congela el trazo (Espacio)">❄ Congelar</button>
+          <button id="btnSilenciar" type="button" aria-pressed="false" title="Silenciar alarmas (A)">🔕 Silenciar alarmas</button>
+        </div>
+        <div class="opciones">
+          <label><input type="checkbox" id="chkNombre"> Mostrar el nombre del ritmo en el monitor</label>
+          <label><input type="checkbox" id="chkCuadricula"> Cuadrícula de papel ECG</label>
+          <label class="campo-linea">Ventana
+            <select id="selVentana"><option value="4">4 s</option><option value="6" selected>6 s</option><option value="8">8 s</option><option value="10">10 s</option></select>
+          </label>
+          <label class="campo-linea">Ganancia ECG
+            <select id="selGanancia"><option value="0.5">x0,5</option><option value="1" selected>x1</option><option value="2">x2</option><option value="4">x4</option></select>
+          </label>
+        </div>
+      </section>
+
+      <section class="tarjeta">
+        <h2>Escenario programado</h2>
+        <div class="fila-linea">
+          <select id="selPredef" aria-label="Escenarios de ejemplo"></select>
+          <button id="btnCargarPredef" type="button">Cargar</button>
+        </div>
+        <ol class="pasos" id="listaPasos"></ol>
+        <p class="vacio" id="pasosVacio">Aún no hay pasos. Elige una arritmia arriba y pulsa «Añadir al escenario», o carga un ejemplo.</p>
+        <div class="reproductor">
+          <button id="btnPlay" class="primario" type="button">▶ Iniciar</button>
+          <button id="btnPausa" type="button" title="Pausar">⏸</button>
+          <button id="btnAnt" type="button" title="Paso anterior">⏮</button>
+          <button id="btnSig" type="button" title="Siguiente paso (N)">⏭ Siguiente</button>
+          <button id="btnStop" type="button" title="Detener">⏹</button>
+          <label><input type="checkbox" id="chkRepetir"> Repetir</label>
+        </div>
+        <p class="aviso" id="avisoEsc" role="status" hidden></p>
+        <div class="progreso">
+          <div id="txtProgreso">Detenido</div>
+          <div class="barra"><div id="barraProgreso"></div></div>
+        </div>
+        <details class="archivo">
+          <summary>Guardar, abrir y compartir</summary>
+          <div class="fila-linea">
+            <input type="text" id="txtNombreEsc" placeholder="Nombre del escenario">
+            <button id="btnGuardar" type="button">Guardar</button>
+          </div>
+          <div class="fila-linea">
+            <select id="selGuardados" aria-label="Escenarios guardados"></select>
+            <button id="btnAbrir" type="button">Abrir</button>
+            <button id="btnBorrarGuardado" type="button" title="Borrar el escenario guardado">🗑</button>
+          </div>
+          <div class="fila-linea">
+            <button id="btnExportar" type="button">⬇ Exportar archivo</button>
+            <label class="boton-archivo">⬆ Importar archivo<input type="file" id="fileImportar" accept=".json,application/json" hidden></label>
+            <button id="btnVaciar" type="button">Vaciar pasos</button>
+          </div>
+          <div class="fila-linea">
+            <button id="btnMostrarJson" type="button">Pegar o copiar como texto</button>
+          </div>
+          <div class="caja-json" id="cajaJson" hidden>
+            <textarea id="txtJson" rows="6" spellcheck="false" aria-label="Escenario en formato de texto"></textarea>
+            <div class="fila-linea">
+              <button id="btnCopiarJson" type="button">Copiar</button>
+              <button id="btnPegarJson" type="button">Cargar este texto</button>
+            </div>
+          </div>
+          <p class="nota">Los escenarios guardados se quedan en este navegador. Usa «Exportar» para compartirlos con otros instructores.</p>
+        </details>
+      </section>
+
+      <section class="tarjeta ayuda">
+        <h2>Atajos de teclado</h2>
+        <ul>
+          <li><kbd>N</kbd> siguiente paso · <kbd>C</kbd> RCP · <kbd>D</kbd> descarga</li>
+          <li><kbd>Espacio</kbd> congelar · <kbd>A</kbd> silenciar alarmas · <kbd>S</kbd> sonido · <kbd>F</kbd> pantalla completa</li>
+        </ul>
+        <p class="nota">Herramienta exclusivamente educativa. No es un dispositivo médico; las morfologías son aproximaciones y no sustituyen a las guías clínicas vigentes.</p>
+      </section>
+    </aside>
+  </main>
+
+  <script src="js/ritmos.js"></script>
+  <script src="js/motor.js"></script>
+  <script src="js/monitor.js"></script>
+  <script src="js/escenarios.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
