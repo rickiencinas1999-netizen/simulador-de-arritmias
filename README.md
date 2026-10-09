@@ -6,7 +6,7 @@ Aplicación web para simular arritmias cardiacas en un monitor de signos vitales
 
 No necesita instalación ni conexión a internet: abre `index.html` en un navegador (Chrome, Edge, Firefox o Safari).
 
-1. **Ritmo:** elige una arritmia, ajusta la FC y, si quieres, los signos vitales. Pulsa **Aplicar ahora** para que el monitor la muestre de inmediato (modo «una sola arritmia»).
+1. **Ritmo:** elige una arritmia y pulsa **Aplicar ahora** para que el monitor la muestre de inmediato (modo «una sola arritmia»). Con ese ritmo en pantalla, la FC y los signos vitales (SpO₂, PAS, PAD, FR, EtCO₂ y temperatura) cambian en el monitor en cuanto los modificas, sin reiniciar el ritmo.
 2. **Escenario programado:** pulsa **Añadir al escenario** para encadenar varios ritmos. Cada paso tiene su duración en segundos; con duración **0** el paso espera hasta que el instructor pulse **Siguiente**. Puedes reordenar los pasos, repetir el escenario en bucle, guardarlo en el navegador o exportarlo a un archivo para compartirlo.
 3. **Proyección:** **Monitor en otra ventana** abre solo el monitor (para el proyector o una segunda pantalla) mientras controlas todo desde la ventana principal. Con **Pantalla completa** (o doble clic en el monitor) lo amplías.
 

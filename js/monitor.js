@@ -140,7 +140,7 @@
       const $ = (sel) => raiz.querySelector(sel);
       this.el = {
         fc: $('[data-v="fc"]'), spo2: $('[data-v="spo2"]'), pa: $('[data-v="pa"]'), pam: $('[data-v="pam"]'),
-        etco2: $('[data-v="etco2"]'), fr: $('[data-v="fr"]'), corazon: $('[data-v="corazon"]'),
+        etco2: $('[data-v="etco2"]'), temp: $('[data-v="temp"]'), fr: $('[data-v="fr"]'), corazon: $('[data-v="corazon"]'),
         alarma: $('[data-v="alarma"]'), nombre: $('[data-v="nombre"]'), reloj: $('[data-v="reloj"]'),
         estado: $('[data-v="estado"]'),
       };
@@ -198,6 +198,10 @@
       }
       if (m.signos.spo2 && m.signos.spo2 < 90) return { texto: 'SpO2 BAJA', nivel: 'media' };
       if (m.signos.tas && m.signos.tas < 90) return { texto: 'PA BAJA', nivel: 'media' };
+      if (m.signos.tas && m.signos.tas > 180) return { texto: 'PA ALTA', nivel: 'media' };
+      if (m.signos.fr && (m.signos.fr < 8 || m.signos.fr > 30)) return { texto: m.signos.fr < 8 ? 'FR BAJA' : 'FR ALTA', nivel: 'media' };
+      if (m.signos.temp != null && m.signos.temp >= 38.5) return { texto: 'TEMP ALTA', nivel: 'media' };
+      if (m.signos.temp != null && m.signos.temp < 35) return { texto: 'TEMP BAJA', nivel: 'media' };
       return null;
     }
 
@@ -223,6 +227,7 @@
       }
       this.el.etco2.textContent = s.fr ? Math.round(m.etco2Efectivo()) : '--';
       this.el.fr.textContent = s.fr || '--';
+      this.el.temp.textContent = s.temp != null ? s.temp.toFixed(1).replace('.', ',') : '--';
       this.el.nombre.textContent = this.opc.mostrarNombre ? r.nombre + (m.rcp ? ' · RCP' : '') : '';
 
       const al = this.alarmaActual();

@@ -1,7 +1,7 @@
 'use strict';
 // Guarda la app en el dispositivo para que funcione sin conexión.
 // Al publicar cambios, sube el número de VERSION para que se actualice.
-const VERSION = 'arritmias-v1';
+const VERSION = 'arritmias-v2';
 const ARCHIVOS = [
   './',
   'index.html',

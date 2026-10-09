@@ -144,6 +144,8 @@ select, input[type="text"], input[type="number"] {
 .valor.grande { font-size: clamp(42px, 6.5vw, 96px); }
 .valor.mediano { font-size: clamp(22px, 2.8vw, 40px); }
 .unid { text-align: right; font-size: 12px; opacity: 0.8; }
+.temp { text-align: right; font-size: 13px; margin-top: 4px; color: var(--texto-2); }
+.temp b { color: var(--pa); font-size: 16px; font-variant-numeric: tabular-nums; }
 .corazon { opacity: 0.25; }
 .corazon.late { animation: latido 0.3s ease-out; }
 @keyframes latido { 0% { opacity: 1; transform: scale(1.35); } 100% { opacity: 0.25; transform: scale(1); } }
@@ -174,6 +176,9 @@ select, input[type="text"], input[type="number"] {
 .nota { color: var(--texto-2); font-size: 12px; margin: 8px 0 0; }
 
 details summary { cursor: pointer; color: var(--texto-2); margin: 4px 0 8px; }
+.signos-cab { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; color: var(--texto-2); font-size: 13px; margin-bottom: 6px; }
+.signos-cab small { font-size: 12px; }
+.signos-cab small.en-vivo { color: var(--ecg); }
 .rejilla-signos { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px; margin-bottom: 10px; }
 .rejilla-signos label { display: flex; flex-direction: column; font-size: 12px; color: var(--texto-2); gap: 2px; }
 .rejilla-signos input { width: 100%; }
