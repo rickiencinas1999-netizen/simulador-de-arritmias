@@ -12,7 +12,7 @@ No necesita instalación ni conexión a internet: abre `index.html` en un navega
 
 ### Instalarla en el celular (app web)
 
-1. Publica el sitio con GitHub Pages: en el repositorio, **Settings → Pages → Build and deployment**, elige **Deploy from a branch**, la rama con la app y la carpeta **/(root)**, y guarda. En uno o dos minutos queda en `https://rickiencinas1999-netizen.github.io/simulador-de-arritmas-/`.
+1. Publica el sitio con GitHub Pages: en el repositorio, **Settings → Pages → Build and deployment**, elige **Deploy from a branch**, la rama con la app y la carpeta **/(root)**, y guarda. En uno o dos minutos queda en `https://rickiencinas1999-netizen.github.io/simulador-de-arritmias/`.
 2. Abre esa dirección en el celular.
    - **Android (Chrome):** menú ⋮ → **Instalar aplicación** (o **Añadir a pantalla de inicio**).
    - **iPhone (Safari):** botón Compartir → **Añadir a pantalla de inicio**.
